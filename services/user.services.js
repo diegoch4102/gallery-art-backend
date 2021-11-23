@@ -1,5 +1,6 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
+const { newUserSchemaDB } = require('./../model/user.schema');
 
 class UsersService {
     constructor() {
@@ -18,40 +19,26 @@ class UsersService {
     }
 
     async create(data) {
-        const newUser = {
-            id: faker.datatype.uuid(),
-            ...data
-        };
-        this.users.push(newUser);
-        return newUser;
+        return await newUserSchemaDB.create(data);
     }
 
     async find() {
-        return this.users;
+        let users = await newUserSchemaDB.find();
+        return users;
     }
 
     async findOne(id) {
-        const user = this.users.find(item => item.id === id);
+        let user = await newUserSchemaDB.findById(id);
         if (!user) {
             throw boom.notFound(`User ${id} no found`);
-        }
-        if (user.isBlock) {
-            throw boom.conflict(`User ${id} is blocked`);
         }
         return user;
     }
 
     async update(id, changes) {
-        const index = this.users.findIndex(item => item.id === id);
-        if (index === -1) {
-            throw boom.notFound(`User ${id} no found`);
-        }
-        const user = this.users[index];
-        this.users[index] = {
-            ...user,
-            ...changes,
-        };
-        return this.products[index];
+        const query = { _id: id };
+        return await newUserSchemaDB.findOneAndUpdate(query, changes);
+
     }
 
     async delete(id) {

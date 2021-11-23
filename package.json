@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon main.js -L",
-        "start": "node main.js",
+        "dev": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery nodemon main.js -L",
+        "start": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery node main.js",
         "linter": "eslint"
     },
     "repository": {

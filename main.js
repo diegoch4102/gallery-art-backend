@@ -3,10 +3,12 @@ const routerApi = require('./routes');
 const cors = require("cors");
 // const { logErrors, errorHandler, boomErrorHandler } = require('./middlewares/error.handler');
 const { logErrors, boomErrorHandler } = require('./middlewares/error.handler');
+const { config } = require('./config/config');
+
 
 
 const app = express();
-const port = process.env.PORT || 1600;
+const PORT = config.port;
 app.use(express.json());
 app.use(cors());
 
@@ -21,6 +23,6 @@ app.use(logErrors);
 app.use(boomErrorHandler);
 // app.use(errorHandler);
 
-app.listen(port, () => {
+app.listen(PORT, () => {
     console.log("app Conectado al servidor");
 });
