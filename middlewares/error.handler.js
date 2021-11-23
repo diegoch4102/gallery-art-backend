@@ -1,14 +1,16 @@
+/** Captura cualquier error y continúal al siguiente middleware */
 function logErrors(err, req, res, next) {
     console.error(err);
     next(err);
 }
 
-function errorHandler(err, req, res) {
-    res.status(500).json({
-        message: err.message,
-        stack: err.stack,
-    });
-}
+/** Captura el error y termina el proceso y muestra el error al usuario  */
+// function errorHandler(err, req, res) {
+//     res.status(500).json({
+//         message: err.message,
+//         stack: err.stack,
+//     });
+// }
 
 function boomErrorHandler(err, req, res, next) {
     // Cuando se usa boom para manejar un erro, boom agrega al error
@@ -21,4 +23,5 @@ function boomErrorHandler(err, req, res, next) {
     next(err);
 }
 
-module.exports = { logErrors, errorHandler, boomErrorHandler };
+// module.exports = { logErrors, errorHandler, boomErrorHandler };
+module.exports = { logErrors, boomErrorHandler };
