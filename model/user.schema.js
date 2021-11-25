@@ -41,7 +41,7 @@ const generalString = {
 };
 const justString = { type: String, };
 const requiredTrue = { required: true };
-const requiredFalse = { required: false };
+// const requiredFalse = { required: false };
 
 const createUsersSchemaDB = connection.Schema({
     firstname: {...generalString, ...requiredTrue },
@@ -49,27 +49,27 @@ const createUsersSchemaDB = connection.Schema({
     email: {...justString, ...requiredTrue },
     username: {...generalString, ...requiredTrue },
     password: {...generalString, ...requiredTrue },
-    birthdate: {...generalString, ...requiredTrue },
+    birthdate: { type: Date, default: Date.now },
     phoneNumber: {...generalString, ...requiredTrue },
 }, {
-    collection: "User",
+    collection: "Users",
     versionKey: false
 });
 
-const updateUsersSchemaDB = connection.Schema({
-    firstname: {...generalString, ...requiredFalse },
-    lastname: {...generalString, ...requiredFalse },
-    email: {...justString, ...requiredFalse },
-    username: {...generalString, ...requiredFalse },
-    password: {...generalString, ...requiredFalse },
-    birthdate: {...generalString, ...requiredFalse },
-    phoneNumber: {...generalString, ...requiredFalse },
-}, {
-    collection: "User",
-    versionKey: false
-});
+// const updateUsersSchemaDB = connection.Schema({
+//     firstname: {...generalString, ...requiredFalse },
+//     lastname: {...generalString, ...requiredFalse },
+//     email: {...justString, ...requiredFalse },
+//     username: {...generalString, ...requiredFalse },
+//     password: {...generalString, ...requiredFalse },
+//     birthdate: {...generalString, ...requiredFalse },
+//     phoneNumber: {...generalString, ...requiredFalse },
+// }, {
+//     collection: "User",
+//     versionKey: false
+// });
 
-const newUserSchemaDB = connection.model('User', createUsersSchemaDB);
+const userSchema = connection.model('Users', createUsersSchemaDB);
 // const updateUserSchemaDB = connection.model('User', updateUsersSchemaDB);
 
-module.exports = { newUserSchemaDB };
+module.exports = { userSchema };
