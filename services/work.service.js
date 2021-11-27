@@ -1,19 +1,21 @@
-const boom = require('@hapi/boom');
-const { workSchema } = require('./../model/work.schema');
+// const boom = require('@hapi/boom');
+const workSchema = require('./../model/work.schema');
 
-class UsersService {
+class WorksService {
     async create(data) {
-        return await workSchema.create(data);
-    }
+        // return await workSchema.create(data);
+        let workReturned = await workSchema.create(data);
 
-    async find(filterUser) {
         return new Promise((resolve, reject) => {
-            let filter = {};
-            if (filterUser !== null) {
-                filter = { maker: { _id: filterUser } };
-            }
-            workSchema.find(filter)
-                .populate('maker')
+            workSchema.findById(workReturned._id)
+                .populate('maker', 'firstname username')
+                .populate({
+                    path: 'plrty',
+                    populate: [
+                        { path: 'likes', select: 'firstname username' },
+                        { path: 'dislikes', select: 'firstname username' }
+                    ]
+                })
                 .exec((error, populated) => {
                     if (error) {
                         return reject(error);
@@ -23,12 +25,51 @@ class UsersService {
         });
     }
 
+    async find() {
+        return new Promise((resolve, reject) => {
+            workSchema.find()
+                .populate('maker', 'firstname username')
+                .populate({
+                    path: 'plrty',
+                    populate: [
+                        { path: 'likes', select: 'firstname username' },
+                        { path: 'dislikes', select: 'firstname username' }
+                    ]
+                })
+                .exec((error, populated) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(populated);
+                });
+
+        });
+    }
+
     async findOne(id) {
-        let user = await workSchema.findById(id);
-        if (!user) {
-            throw boom.notFound(`User ${id} no found`);
-        }
-        return user;
+        // let user = await workSchema.findById(id);
+        // if (!user) {
+        //     throw boom.notFound(`User ${id} no found`);
+        // }
+        // return user;
+        return new Promise((resolve, reject) => {
+            workSchema.findById(id)
+                .populate('maker', 'firstname username')
+                .populate({
+                    path: 'plrty',
+                    populate: [
+                        { path: 'likes', select: 'firstname username' },
+                        { path: 'dislikes', select: 'firstname username' }
+                    ]
+                })
+                .exec((error, populated) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(populated);
+                });
+
+        });
     }
 
     async update(id, changes) {
@@ -42,4 +83,4 @@ class UsersService {
     }
 }
 
-module.exports = UsersService;
+module.exports = WorksService;

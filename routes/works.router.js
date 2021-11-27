@@ -1,46 +1,55 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
-const service = require('./../services/work.service');
+const workCtrl = require('./../controller/work.ctrl');
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'public/images/');
     },
     filename: (req, file, cb) => {
-        cb(null, `${file.filename}-${Date.now()}`);
+        // cb(null, `${file.fieldname}-${Date.now()}`);
+        cb(null, `${file.originalname}`);
     }
 });
 var upload = multer({ storage: storage });
 
 router.get('/', async(req, res) => {
-    const works = await service.find();
-    res.json(works);
+    workCtrl.getAll()
+        .then((works) => {
+            res.json(works);
+        })
+        .catch(e => {
+            res.send(e);
+        });
 });
 
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
-    const user = await service.findOne(id);
+    const user = await workCtrl.getOne(id);
     res.json(user);
 });
 
 router.post('/',
-    upload.single('image'),
+    upload.single('img'),
     async(req, res) => {
-        req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`))
-        req.body.image.contentType = "image/png";
-        const newUser = await service.create(req.body);
-        res.status(201).json(newUser);
+        console.log(req.file);
+        console.log(req.body);
+        // req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`));
+        // console.log(`image.data type ${typeof req.body.image.data}`);
+        // req.body.image.contentType = "image/png";
+
+        // const newUser = await workCtrl.addNew(req.body, req.file);
+        // res.status(201).json(newUser);
+        res.status(201);
     });
 
 router.patch('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        const user = await service.update(id, body);
+        const user = await workCtrl.updateOne(id, body);
         res.json(user);
     } catch (error) {
         next(error);
@@ -49,7 +58,7 @@ router.patch('/:id', async(req, res, next) => {
 
 router.delete('/:id', async(req, res) => {
     const { id } = req.params;
-    const respuesta = await service.delete(id);
+    const respuesta = await workCtrl.delete(id);
     res.json(respuesta);
 });
 
