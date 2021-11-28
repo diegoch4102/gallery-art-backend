@@ -34,8 +34,12 @@ router.get('/:id', async(req, res) => {
 router.post('/',
     upload.single('img'),
     async(req, res) => {
+        console.group('[file]');
         console.log(req.file);
+        console.groupEnd();
+        console.group('[file]');
         console.log(req.body);
+        console.groupEnd();
         // req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`));
         // console.log(`image.data type ${typeof req.body.image.data}`);
         // req.body.image.contentType = "image/png";
