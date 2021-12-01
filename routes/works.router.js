@@ -25,36 +25,99 @@ router.get('/', async(req, res) => {
         });
 });
 
+router.get('/categories/', async(req, res) => {
+    workCtrl.getCategories()
+        .then((categories) => {
+            res.json(categories);
+        })
+        .catch(e => {
+            res.send(e);
+        });
+});
+
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
-    const user = await workCtrl.getOne(id);
-    res.json(user);
+    await workCtrl.getOne(id)
+        .then((user) => {
+            res.json(user);
+        })
+        .catch(e => {
+            res.send(e);
+        });
+});
+
+router.get('/category/:idCategory', async(req, res) => {
+    const { idCategory } = req.params;
+    workCtrl.getOneCategory(idCategory)
+        .then((category) => {
+            res.json(category);
+        })
+        .catch(e => {
+            res.send(e);
+        });
 });
 
 router.post('/',
-    upload.single('img'),
+    upload.single('data'),
     async(req, res) => {
-        console.group('[file]');
-        console.log(req.file);
-        console.groupEnd();
-        console.group('[file]');
-        console.log(req.body);
-        console.groupEnd();
+        // console.group('[HEADERS]');
+        // console.log(req.headers);
+        // console.groupEnd();
+        // console.group('[FILE]');
+        // console.log(req.file);
+        // console.groupEnd();
+        // console.group('[BODY]');
+        // console.log(req.body);
+        // console.groupEnd();
+
         // req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`));
         // console.log(`image.data type ${typeof req.body.image.data}`);
         // req.body.image.contentType = "image/png";
 
-        // const newUser = await workCtrl.addNew(req.body, req.file);
-        // res.status(201).json(newUser);
-        res.status(201);
+        workCtrl.addNew(req.body, req.file)
+            .then((newWork) => {
+                res.status(201).json(newWork);
+            })
+            .catch(e => {
+                res.send(e);
+            });
     });
 
-router.patch('/:id', async(req, res, next) => {
+router.post('/imgPatch/',
+    upload.single('data'),
+    async(req, res) => {
+        // console.group('[FILE]');
+        // console.log(req.file);
+        // console.groupEnd();
+        await workCtrl.modifyImg(req.file)
+            // SIN ESTE MÉTODO FALLA INTENTAR ENCERRAR img 👇🏻 ETRE PARÉNTESIS
+            .then(img => {
+                res.status(201).json(img);
+            })
+            .catch(e => {
+                res.send(e);
+            });
+    });
+
+router.put('/:id', async(req, res, next) => {
+    // console.group('[HEADERS]');
+    // console.log(req.headers);
+    // console.groupEnd();
+    // console.group('[BODY]');
+    // console.log(req.body);
+    // console.groupEnd();
     try {
         const { id } = req.params;
-        const body = req.body;
-        const user = await workCtrl.updateOne(id, body);
+        // if (req.file !== undefined) {
+        // const mod = await workCtrl.updateOne(id, req.body, req.file);
+        // console.group('[response]');
+        // console.log(mod);
+        // console.groupEnd();
+        // res.json(mod);
+        // } else {
+        const user = await workCtrl.updateOne(id, req.body);
         res.json(user);
+        // }
     } catch (error) {
         next(error);
     }

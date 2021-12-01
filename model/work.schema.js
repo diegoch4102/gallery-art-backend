@@ -13,7 +13,10 @@ const worksSchema = connection.Schema({
     },
     value: Number,
     available: Boolean,
-    category: String,
+    category: {
+        type: connection.Schema.Types.ObjectId,
+        ref: 'Categories'
+    },
     img: {
         data: String,
         contentType: String

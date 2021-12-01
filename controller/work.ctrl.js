@@ -4,60 +4,124 @@ const WorksService = require("./../services/work.service");
 
 const service = new WorksService();
 
+const categories = new Map([
+    [1, '61a3fd8f99cb288a9a873443'], // Digital
+    [2, '61a3fd7699cb288a9a873441'], // Graphite
+    [3, '61a3fdd199cb288a9a873444'], // Ink
+    [4, '61a3fde999cb288a9a873445'], // Oil paint
+    [5, '61a3fe2a99cb288a9a873447'], // Pen
+    [6, '61a3fe1399cb288a9a873446'], // Photograph
+    [7, '61a3fe5499cb288a9a873448'], // Textile
+]);
+
 const workCtrl = {};
 
+let modImgData = '';
+let modImgMimeType = '';
+
 workCtrl.getAll = async() => {
-    return new Promise((resolve) => {
-        resolve(service.find());
-    });
-    // let works = await service.find();
-    // console.log(`[ctrl] ${works}`);
-    // return works;
+    return await service.find();
+};
+
+workCtrl.getCategories = async() => {
+    return await service.getCategories();
+};
+
+workCtrl.getOneCategory = async(idCategory) => {
+    return await service.getCategory(idCategory);
 };
 
 workCtrl.getOne = async(id) => {
-    let works = await service.findOne(id);
-    return works;
+    return await service.findOne(id);
 };
 
+workCtrl.addNew = async(body, file) => {
+    let avail = true;
+    if (body.available !== 'true') { avail = !true; }
+    let imgData = `http://localhost:1600/public/images/${file.originalname}`;
+    // let imgData = await fs.readFile(path.join(`${__dirname}/uploads/${file.filename}`));
+    let cat = categories.get(Number(body.category));
 
-workCtrl.addNew = async(work, file) => {
-    console.log(file);
+    let newWork = {
+        name: body.name,
+        desc: {
+            descText: body.descText,
+            creationYear: body.creationYear,
+        },
+        value: Number(body.value),
+        available: avail,
+        category: cat,
+        img: {
+            data: imgData,
+            contentType: file.mimetype
+        },
+        maker: body.maker,
+        plrty: {
+            likes: [],
+            dislikes: []
+        }
+    };
+
+    // console.group('[obj send]');
+    // console.log(newWork);
+    // console.groupEnd();
+
+    return await service.create(newWork);
 };
 
-// workCtrl.addNew = async(work, file) => {
-//     let avail = true;
-//     if (work.available !== 'true') { avail = !true; }
-//     let imgData = `http://localhost:1600/public/images/${file.originalname}`;
-//     // let imgData = await fs.readFile(path.join(`${__dirname}/uploads/${file.filename}`));
-//     let newWork = {
-//         name: work.name,
-//         desc: {
-//             descText: work.desc.descText,
-//             creationYear: work.desc.creationYear,
-//         },
-//         value: Number(work.value),
-//         available: avail,
-//         category: work.category,
-//         img: {
-//             data: imgData,
-//             contentType: file.mimetype
-//         },
-//         maker: work.maker,
-//         plrty: {
-//             likes: work.plrty.likes,
-//             dislikes: work.plrty.dislikes
-//         }
-//     };
-//     return await service.create(newWork);
-// };
+workCtrl.modifyImg = async(file) => {
+    modImgData = `http://localhost:1600/public/images/${file.originalname}`;
+    modImgMimeType = file.mimetype;
+};
 
-workCtrl.updateOne = async(id, work) => {
-    return await service.update(id, work);
+workCtrl.updateOne = async(id, body) => {
+    // console.group('[obj send]');
+    // console.log(work);
+    // console.groupEnd();
+    // return await service.update(id, work);
+    let avail = true;
+    if (body.available !== 'true') { avail = !true; }
+    let imgData = '';
+    if (modImgData !== '') {
+        imgData = modImgData;
+    } else {
+        imgData = body.img.data;
+    }
+    let imgMimeType = '';
+    if (modImgMimeType !== '') {
+        imgMimeType = modImgData;
+    } else {
+        imgMimeType = body.img.contentType;
+    }
+    let cat = categories.get(Number(body.category));
+
+    let modWork = {
+        name: body.name,
+        desc: {
+            descText: body.desc.descText,
+            creationYear: body.desc.creationYear,
+        },
+        value: Number(body.value),
+        available: avail,
+        category: cat,
+        img: {
+            data: imgData,
+            contentType: imgMimeType
+        },
+        maker: body.maker,
+        plrty: {
+            likes: body.plrty.likes,
+            dislikes: body.plrty.dislikes
+        }
+    };
+    modImgData = '';
+    modImgMimeType = '';
+    await service.update(id, modWork);
+    return await service.findOne(id);
 };
 
 workCtrl.delete = async(id) => {
-    await service.deleteOne({ _id: id });
+    return await service.delete({ _id: id });
 };
 
 module.exports = workCtrl;
