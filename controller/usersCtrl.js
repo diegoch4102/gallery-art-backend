@@ -1,4 +1,5 @@
 const UsersService = require('./../services/user.services');
+const bcrypt = require('bcrypt');
 
 const service = new UsersService();
 
@@ -12,16 +13,27 @@ usersCtrl.getOne = async(id) => {
     return await service.findOne(id);
 };
 
-usersCtrl.crypt = async() => {
+usersCtrl.encrypt = async(val) => {
+    let res = await bcrypt.hash(val, 10);
+    return res;
+};
+
+usersCtrl.crypt = async(data) => {
     for (let [key, value] of Object.entries(data)) {
-        console.group(`[]`);
-        console.log(`${key}=${value}`);
-        console.groupEnd();
+        if (key === 'username') {
+            continue;
+        }
+        // console.group(`[${key}: ${value}]`);
+        let hash = await bcrypt.hash(value, 10);
+        // let confirm = await bcrypt.compare(value, hash);
+        // console.log(`Confirmaticon: ${confirm}`);
+        data[key] = hash;
+        // console.groupEnd();
     }
 };
 
 usersCtrl.addNew = async(user) => {
-    usersCtrl.crypt();
+    usersCtrl.crypt(user);
     // return await service.create(user);
 };
 

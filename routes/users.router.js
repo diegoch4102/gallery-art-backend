@@ -29,7 +29,7 @@ router.get('/:id', async(req, res) => {
 
 router.post('/', async(req, res) => {
     usersCtrl.addNew(req.body)
-        .then((users) => {
+        .then((newUser) => {
             res.status(201).json(newUser);
         })
         .catch(e => {
