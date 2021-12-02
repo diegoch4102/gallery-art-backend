@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery nodemon main.js -L",
-        "start": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery node main.js",
+        "dev": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery API_KEY=12345 nodemon main.js -L",
+        "start": "USER=db-admin PWR=k9hCDR3v4Aa8iiR CLUSTER=cluster-diego-misiontic DATABASE=ArtGallery API_KEY=12345 node main.js",
         "linter": "eslint"
     },
     "repository": {
@@ -21,6 +21,7 @@
     "homepage": "https://github.com/diegoch4102/gallery-art-backend#readme",
     "dependencies": {
         "@hapi/boom": "^9.1.4",
+        "bcrypt": "^5.0.1",
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "faker": "^5.5.3",

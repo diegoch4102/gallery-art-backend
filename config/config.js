@@ -5,6 +5,7 @@ const config = {
     pwr: process.env.PWR,
     cluster: process.env.CLUSTER,
     database: process.env.DATABASE,
+    apiKey: process.env.API_KEY,
 };
 
 module.exports = { config };

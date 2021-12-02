@@ -1,32 +1,47 @@
 const express = require('express');
-const UsersService = require('./../services/user.services');
+const usersCtrl = require('./../controller/usersCtrl');
 // const validatorHandler = require('./../middlewares/validator.handler');
 
 const router = express.Router();
-const service = new UsersService();
+
 
 router.get('/', async(req, res) => {
-    const users = await service.find();
-    res.json(users);
+    usersCtrl.getAll()
+        .then((users) => {
+            res.json(users);
+        })
+        .catch(e => {
+            res.send(e);
+        });
 });
 
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
-    const user = await service.findOne(id);
-    res.json(user);
+    usersCtrl.getOne(id)
+        .then(user => {
+            res.json(user);
+        })
+        .catch(e => {
+            res.send(e);
+        });
+
 });
 
 router.post('/', async(req, res) => {
-    const body = req.body;
-    const newUser = await service.create(body);
-    res.status(201).json(newUser);
+    usersCtrl.addNew(req.body)
+        .then((users) => {
+            res.status(201).json(newUser);
+        })
+        .catch(e => {
+            res.send(e);
+        });
 });
 
 router.patch('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        const user = await service.update(id, body);
+        const user = await usersCtrl.update(id, body);
         res.json(user);
     } catch (error) {
         next(error);
@@ -35,7 +50,7 @@ router.patch('/:id', async(req, res, next) => {
 
 router.delete('/:id', async(req, res) => {
     const { id } = req.params;
-    const respuesta = await service.delete(id);
+    const respuesta = await usersCtrl.delete(id);
     res.json(respuesta);
 });
 

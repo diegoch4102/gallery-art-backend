@@ -1,23 +1,36 @@
-const userDAO = require("../model/userDAO");
+const UsersService = require('./../services/user.services');
+
+const service = new UsersService();
 
 const usersCtrl = {};
 
 usersCtrl.getAll = async() => {
-    let users = userDAO.find();
+    return await service.find();
 };
 
-usersCtrl.putNew = async(user) => {
-    return await userDAO.create(user);
+usersCtrl.getOne = async(id) => {
+    return await service.findOne(id);
 };
 
-usersCtrl.update = async(user) => {
-    let idUser = user._id;
-    delete user._id;
-    return await userDAO.findByIdAndUpdate(idUser, user);
+usersCtrl.crypt = async() => {
+    for (let [key, value] of Object.entries(data)) {
+        console.group(`[]`);
+        console.log(`${key}=${value}`);
+        console.groupEnd();
+    }
+};
+
+usersCtrl.addNew = async(user) => {
+    usersCtrl.crypt();
+    // return await service.create(user);
+};
+
+usersCtrl.update = async(id, user) => {
+    return await service.update(id, user);
 };
 
 usersCtrl.delete = async(id) => {
-    await userDAO.deleteOne({ _id: id });
+    await service.delete({ _id: id });
 };
 
 module.exports = usersCtrl;

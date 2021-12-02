@@ -5,6 +5,7 @@ const cors = require("cors");
 const { logErrors, boomErrorHandler } = require('./middlewares/error.handler');
 const { config } = require('./config/config');
 const path = require('path');
+const { checkApiKey } = require('./middlewares/auth.handler');
 
 
 
@@ -15,7 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 
-app.get('/', (req, res) => {
+app.get('/', checkApiKey, (req, res) => {
     res.send("<h1>Hola app</h1>");
 });
 
