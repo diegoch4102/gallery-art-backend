@@ -13,6 +13,6 @@ const uri = `mongodb+srv://${USER}:${PWR}@${CLUSTER}.klqr4.mongodb.net/${DATABAS
 
 mongoose.connect(uri).then(() => {
     console.log("Conectado a MongoDB");
-}).catch((e) => console.log("Fallo en la conexión a base de datos." + e));
+}).catch((e) => console.log("Fallo en la conexión a base de datos. " + e));
 
 module.exports = mongoose;
