@@ -1,4 +1,4 @@
-// const boom = require('@hapi/boom');
+const boom = require('@hapi/boom');
 const workSchema = require('./../model/work.schema');
 const categorySchema = require('./../model/category.schema');
 
@@ -41,7 +41,7 @@ class WorksService {
                 })
                 .exec((error, populated) => {
                     if (error) {
-                        return reject(error);
+                        reject(error);
                     }
                     resolve(populated);
                 });
@@ -54,7 +54,11 @@ class WorksService {
     }
 
     async getCategory(idCategory) {
-        return await categorySchema.findById(idCategory);
+        const cat = await categorySchema.findById(idCategory);
+        if (!cat) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return cat;
     }
 
     async findOne(id) {
@@ -76,7 +80,9 @@ class WorksService {
                 })
                 .exec((error, populated) => {
                     if (error) {
-                        return reject(error);
+                        reject(error);
+                    } else if (!populated) {
+                        reject(boom.notFound(`User ${id} no found`));
                     }
                     resolve(populated);
                 });
@@ -86,7 +92,11 @@ class WorksService {
 
     async update(id, changes) {
         const query = { _id: id };
-        return await workSchema.findOneAndUpdate(query, changes);
+        const user = await workSchema.findOneAndUpdate(query, changes);
+        if (!user) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return user;
         // .then((data) => {
         //     return new Promise((resolve) => {
         //         resolve(this.findOne(id));
@@ -96,14 +106,18 @@ class WorksService {
     }
 
     async delete(id) {
-        await workSchema.deleteOne({ _id: id })
-            .then(() => {
-                return true;
-            })
-            .catch(error => {
-                console.log({ message: error });
-                return false;
-            });
+        const confirm = await workSchema.deleteOne({ _id: id });
+        if (!confirm) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return confirm;
+        // .then(() => {
+        //     return true;
+        // })
+        // .catch(error => {
+        //     console.log({ message: error });
+        //     return false;
+        // });
     }
 }
 

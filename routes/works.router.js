@@ -15,77 +15,76 @@ const storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage });
 
-router.get('/', async(req, res) => {
+router.get('/', async(req, res, next) => {
     workCtrl.getAll()
         .then((works) => {
             res.json(works);
         })
-        .catch(e => {
-            res.send(e);
+        .catch(error => {
+            next(error);
         });
 });
 
-router.get('/categories/', async(req, res) => {
+router.get('/categories/', async(req, res, next) => {
     workCtrl.getCategories()
         .then((categories) => {
             res.json(categories);
         })
-        .catch(e => {
-            res.send(e);
+        .catch(error => {
+            next(error);
         });
 });
 
-router.get('/:id', async(req, res) => {
+router.get('/:id', async(req, res, next) => {
     const { id } = req.params;
     await workCtrl.getOne(id)
         .then((user) => {
             res.json(user);
         })
-        .catch(e => {
-            res.send(e);
+        .catch(error => {
+            next(error);
         });
 });
 
-router.get('/category/:idCategory', async(req, res) => {
+router.get('/category/:idCategory', async(req, res, next) => {
     const { idCategory } = req.params;
     workCtrl.getOneCategory(idCategory)
         .then((category) => {
             res.json(category);
         })
-        .catch(e => {
-            res.send(e);
+        .catch(error => {
+            next(error);
         });
 });
 
 router.post('/',
     upload.single('data'),
-    async(req, res) => {
+    async(req, res, next) => {
         // console.group('[HEADERS]');
         // console.log(req.headers);
         // console.groupEnd();
-        // console.group('[FILE]');
-        // console.log(req.file);
-        // console.groupEnd();
-        // console.group('[BODY]');
-        // console.log(req.body);
-        // console.groupEnd();
+        console.group('[FILE]');
+        console.log(req.file);
+        console.groupEnd();
+        console.group('[BODY]');
+        console.log(req.body);
+        console.groupEnd();
 
         // req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`));
         // console.log(`image.data type ${typeof req.body.image.data}`);
         // req.body.image.contentType = "image/png";
-
         workCtrl.addNew(req.body, req.file)
             .then((newWork) => {
                 res.status(201).json(newWork);
             })
-            .catch(e => {
-                res.send(e);
+            .catch(error => {
+                next(error);
             });
     });
 
 router.post('/imgPatch/',
     upload.single('data'),
-    async(req, res) => {
+    async(req, res, next) => {
         // console.group('[FILE]');
         // console.log(req.file);
         // console.groupEnd();
@@ -94,39 +93,44 @@ router.post('/imgPatch/',
             .then(img => {
                 res.status(201).json(img);
             })
-            .catch(e => {
-                res.send(e);
+            .catch(error => {
+                next(error);
             });
     });
 
-router.put('/:id', async(req, res, next) => {
-    // console.group('[HEADERS]');
-    // console.log(req.headers);
-    // console.groupEnd();
-    // console.group('[BODY]');
-    // console.log(req.body);
-    // console.groupEnd();
+router.put('/:id',
+    async(req, res, next) => {
+        // console.group('[HEADERS]');
+        // console.log(req.headers);
+        // console.groupEnd();
+        console.group('[BODY]');
+        console.log(req.body);
+        console.groupEnd();
+        try {
+            const { id } = req.params;
+            // if (req.file !== undefined) {
+            // const mod = await workCtrl.updateOne(id, req.body, req.file);
+            // console.group('[response]');
+            // console.log(mod);
+            // console.groupEnd();
+            // res.json(mod);
+            // } else {
+            const user = await workCtrl.updateOne(id, req.body);
+            res.json(user);
+            // }
+        } catch (error) {
+            next(error);
+        }
+    });
+
+router.delete('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
-        // if (req.file !== undefined) {
-        // const mod = await workCtrl.updateOne(id, req.body, req.file);
-        // console.group('[response]');
-        // console.log(mod);
-        // console.groupEnd();
-        // res.json(mod);
-        // } else {
-        const user = await workCtrl.updateOne(id, req.body);
-        res.json(user);
-        // }
+        const respuesta = await workCtrl.delete(id);
+        res.json(respuesta);
     } catch (error) {
         next(error);
     }
-});
-
-router.delete('/:id', async(req, res) => {
-    const { id } = req.params;
-    const respuesta = await workCtrl.delete(id);
-    res.json(respuesta);
 });
 
 module.exports = router;

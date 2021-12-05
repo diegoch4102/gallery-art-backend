@@ -20,21 +20,31 @@ usersCtrl.encrypt = async(val) => {
 
 usersCtrl.crypt = async(data) => {
     for (let [key, value] of Object.entries(data)) {
-        if (key === 'username') {
+        if (key === 'username' || key === 'email') {
             continue;
         }
         // console.group(`[${key}: ${value}]`);
         let hash = await bcrypt.hash(value, 10);
+        data[key] = hash;
+        // console.log(`${key} hashed`);
         // let confirm = await bcrypt.compare(value, hash);
         // console.log(`Confirmaticon: ${confirm}`);
-        data[key] = hash;
         // console.groupEnd();
     }
+    // console.log(`En of user hashing`);
+    return data;
 };
 
 usersCtrl.addNew = async(user) => {
-    usersCtrl.crypt(user);
-    // return await service.create(user);
+    const encryptedUser = await usersCtrl.crypt(user);
+    // console.group('[encryptedUser]');
+    // console.log(encryptedUser);
+    // console.groupEnd();
+    const responseUser = await service.create(encryptedUser);
+    // console.group('[Returned from service]');
+    // console.log(responseUser);
+    // console.groupEnd();
+    return ({ 'email': responseUser.email, 'username': responseUser.username });
 };
 
 usersCtrl.update = async(id, user) => {

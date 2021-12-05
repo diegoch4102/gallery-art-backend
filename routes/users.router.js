@@ -1,57 +1,88 @@
 const express = require('express');
 const usersCtrl = require('./../controller/usersCtrl');
-// const validatorHandler = require('./../middlewares/validator.handler');
+const validatorHandler = require('./../middlewares/validator.handler');
+const { createUser, updateUser, getUser } = require('./../model/user.schema');
 
 const router = express.Router();
 
+/* El uso de try/catch en cada método es la práctica usada para el
+manejo de errores, en conjunto con middlewares para errores */
 
-router.get('/', async(req, res) => {
+router.get('/', async(req, res, next) => {
     usersCtrl.getAll()
         .then((users) => {
             res.json(users);
         })
-        .catch(e => {
-            res.send(e);
+        .catch(error => {
+            /* En lugar de envíar el error al usuario, el error es
+            pasado a los middlewares creados para los errores */
+            // res.send(e);
+            next(error);
         });
 });
 
-router.get('/:id', async(req, res) => {
-    const { id } = req.params;
-    usersCtrl.getOne(id)
-        .then(user => {
+router.get('/:id',
+    validatorHandler(getUser, 'params'),
+    async(req, res, next) => {
+        const { id } = req.params;
+        usersCtrl.getOne(id)
+            .then(user => {
+                res.json(user);
+            })
+            .catch(error => {
+                /* En lugar de envíar el error al usuario, el error es
+          pasado a los middlewares creados para los errores */
+                // res.send(e);
+                next(error);
+            });
+
+    });
+
+router.post('/',
+    validatorHandler(createUser, 'body'),
+    async(req, res, next) => {
+        try {
+            const confirmation = await usersCtrl.addNew(req.body);
+            console.group('[Response from ctrl]');
+            console.log(confirmation);
+            console.groupEnd();
+            res.status(201).json(confirmation);
+        } catch (error) {
+            /* En lugar de envíar el error al usuario, el error es
+              pasado a los middlewares creados para los errores */
+            // res.send(e);
+            next(error);
+        }
+    });
+
+router.put('/:id',
+    validatorHandler(getUser, 'params'),
+    validatorHandler(createUser, 'body'),
+    async(req, res, next) => {
+        try {
+            const { id } = req.params;
+            const body = req.body;
+            const user = await usersCtrl.update(id, body);
             res.json(user);
-        })
-        .catch(e => {
-            res.send(e);
-        });
+        } catch (error) {
+            /* En lugar de envíar el error al usuario, el error es
+              pasado a los middlewares creados para los errores */
+            // res.send(e);
+            next(error);
+        }
+    });
 
-});
-
-router.post('/', async(req, res) => {
-    usersCtrl.addNew(req.body)
-        .then((newUser) => {
-            res.status(201).json(newUser);
-        })
-        .catch(e => {
-            res.send(e);
-        });
-});
-
-router.patch('/:id', async(req, res, next) => {
+router.delete('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
-        const body = req.body;
-        const user = await usersCtrl.update(id, body);
-        res.json(user);
+        const respuesta = await usersCtrl.delete(id);
+        res.json(respuesta);
     } catch (error) {
+        /* En lugar de envíar el error al usuario, el error es
+            pasado a los middlewares creados para los errores */
+        // res.send(e);
         next(error);
     }
-});
-
-router.delete('/:id', async(req, res) => {
-    const { id } = req.params;
-    const respuesta = await usersCtrl.delete(id);
-    res.json(respuesta);
 });
 
 module.exports = router;

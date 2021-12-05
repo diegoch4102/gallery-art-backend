@@ -3,11 +3,15 @@ const { userSchema } = require('./../model/user.schema');
 
 class UsersService {
     async create(data) {
-        userSchema.create(data);
+        return await userSchema.create(data);
     }
 
     async find() {
-        return await userSchema.find();
+        const users = await userSchema.find();
+        if (!users) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return users;
     }
 
     async findOne(id) {
@@ -20,12 +24,19 @@ class UsersService {
 
     async update(id, changes) {
         const query = { _id: id };
-        return await userSchema.findOneAndUpdate(query, changes);
-
+        const user = await userSchema.findOneAndUpdate(query, changes);
+        if (!user) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return user;
     }
 
     async delete(id) {
-        return await userSchema.deleteOne({ _id: id });
+        const confirm = await userSchema.deleteOne({ _id: id });
+        if (!confirm) {
+            throw boom.notFound(`User ${id} no found`);
+        }
+        return confirm;
     }
 }
 

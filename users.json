@@ -1,3 +1,37 @@
-[
-
+[{
+        "firstname": "Maria",
+        "lastname": "Herrera",
+        "email": "marih@mail.com",
+        "username": "dsf#$&DF345",
+        "password": "ñlkj#$&564",
+        "birthdate": "1975-11-21",
+        "phoneNumber": "3149998787"
+    },
+    [BODY]
+    [Object: null prototype] {
+        name: 'foto',
+        descText: 'fgsdfg',
+        creationYear: 'Sun Mar 01 2020 00:00:00 GMT-0500 (hora estándar de Colombia)',
+        value: '345345',
+        available: 'true',
+        category: 'P',
+        maker: '619eb8063e1d3a3842741ea5'
+    }
+    [BODY] {
+        desc: { descText: 'a girl', creationYear: '2020-03-01T05:00:00.000Z' },
+        img: {
+            data: 'http://localhost:1600/public/images/woman-profile.jpg',
+            contentType: 'image/jpeg'
+        },
+        plrty: { likes: [], dislikes: [] },
+        _id: '61aceb6cfa92ca447040ad83',
+        name: 'foto',
+        value: 345345,
+        available: true,
+        maker: {
+            _id: '619eb8063e1d3a3842741ea5',
+            firstname: 'José',
+            username: 'joselito'
+        }
+    }
 ]

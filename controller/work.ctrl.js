@@ -46,7 +46,7 @@ workCtrl.addNew = async(body, file) => {
         name: body.name,
         desc: {
             descText: body.descText,
-            creationYear: body.creationYear,
+            creationYear: new Date(body.creationYear),
         },
         value: Number(body.value),
         available: avail,
@@ -99,7 +99,7 @@ workCtrl.updateOne = async(id, body) => {
         name: body.name,
         desc: {
             descText: body.desc.descText,
-            creationYear: body.desc.creationYear,
+            creationYear: new Date(body.desc.creationYear),
         },
         value: Number(body.value),
         available: avail,

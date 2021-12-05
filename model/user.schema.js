@@ -1,75 +1,59 @@
 const connection = require("../DB/connectionDB");
-// const Joi = require('joi');
-
-// const id = Joi.string().uuid();
-// const firstname = Joi.string().min(2).max(12);
-// const lastname = Joi.string().min(2).max(12);
-// const email = Joi.string().email();
-// const userWord = Joi.string().min(3).max(12);
-// const password = Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}'));
-// const birhtdate = Joi.date();
-// const phoneNumber = Joi.number().integer().min(10).max(10);
-
-// const createUserSchema = Joi.object({
-//     firstname: firstname.required(),
-//     lastname: lastname.required(),
-//     email: email.required(),
-//     userWord: userWord.required(),
-//     password: password.required(),
-//     birhtdate: birhtdate,
-//     phoneNumber: phoneNumber,
-// });
-
-// const updateUserSchema = Joi.object({
-//     firstname: firstname,
-//     lastname: lastname,
-//     email: email,
-//     userWord: userWord,
-//     password: password,
-//     birhtdate: birhtdate,
-//     phoneNumber: phoneNumber,
-// });
-
-// const getUserSchema = Joi.object({
-//     id: id.required(),
-// });
+const Joi = require('joi');
 
 const generalString = {
     type: String,
-    minLength: 3,
-    maxLength: 12,
 };
-const justString = { type: String, };
+
 const requiredTrue = { required: true };
-// const requiredFalse = { required: false };
 
 const createUsersSchemaDB = connection.Schema({
     firstname: {...generalString, ...requiredTrue },
     lastname: {...generalString, ...requiredTrue },
-    email: {...justString, ...requiredTrue },
+    email: {...generalString, ...requiredTrue },
     username: {...generalString, ...requiredTrue },
     password: {...generalString, ...requiredTrue },
-    birthdate: { type: Date, default: Date.now },
+    birthdate: {...generalString, ...requiredTrue },
     phoneNumber: {...generalString, ...requiredTrue },
 }, {
     collection: "Users",
     versionKey: false
 });
 
-// const updateUsersSchemaDB = connection.Schema({
-//     firstname: {...generalString, ...requiredFalse },
-//     lastname: {...generalString, ...requiredFalse },
-//     email: {...justString, ...requiredFalse },
-//     username: {...generalString, ...requiredFalse },
-//     password: {...generalString, ...requiredFalse },
-//     birthdate: {...generalString, ...requiredFalse },
-//     phoneNumber: {...generalString, ...requiredFalse },
-// }, {
-//     collection: "User",
-//     versionKey: false
-// });
 
 const userSchema = connection.model('Users', createUsersSchemaDB);
-// const updateUserSchemaDB = connection.model('User', updateUsersSchemaDB);
 
-module.exports = { userSchema };
+const firstnameJ = Joi.string().max(12).min(2).trim();
+const lastnameJ = Joi.string().max(16).min(2).trim();
+const emailJ = Joi.string().email();
+const usernameJ = Joi.string().min(3).max(12).trim();
+const passwordJ = Joi.string().pattern(/^(?=.*\d)(?=.*[\u0021-\u002b\u003c-\u0040])(?=.*[A-Z])(?=.*[a-z])\S{8,16}$/);
+const birthdateJ = Joi.string().pattern(/^\d{4}([\-/.])(0?[1-9]|1[1-2])\1(3[01]|[12][0-9]|0?[1-9])$/);
+const phoneNumberJ = Joi.string().length(10).pattern(/^\d{3,3}[\-\. ]?\d{3,3}[\-\. ]?\d{4,4}$/);
+const idJ = Joi.string().alphanum().min(24);
+
+const createUser = Joi.object({
+    firstname: firstnameJ.required(),
+    lastname: lastnameJ.required(),
+    email: emailJ.required(),
+    username: usernameJ.required(),
+    password: passwordJ.required(),
+    birthdate: birthdateJ.required(),
+    phoneNumber: phoneNumberJ.required(),
+});
+
+const updateUser = Joi.object({
+    firstname: firstnameJ,
+    lastname: lastnameJ,
+    email: emailJ,
+    username: usernameJ,
+    password: passwordJ,
+    birthdate: birthdateJ,
+    phoneNumber: phoneNumberJ,
+});
+
+const getUser = Joi.object({
+    id: idJ.required()
+});
+
+module.exports = { userSchema, createUser, updateUser, getUser };

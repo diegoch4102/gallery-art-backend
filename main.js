@@ -22,6 +22,11 @@ app.get('/', checkApiKey, (req, res) => {
 
 routerApi(app);
 
+/* Implementación de los middleware de tipo error */
+// Estos se implementan luego del uso/asignación del las otras rutas 👆🏻
+// Se ejecutan en el orden en que son declarados aquí -es decir que si
+// se declara primero uno que termina el proceso, los otros no
+// correrán.
 app.use(logErrors);
 app.use(boomErrorHandler);
 // app.use(errorHandler);
