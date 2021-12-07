@@ -10,14 +10,11 @@ const worksSchema = connection.Schema({
     name: String,
     desc: {
         descText: String,
-        creationYear: Date
+        creationYear: String
     },
     value: Number,
     available: Boolean,
-    category: {
-        type: connection.Schema.Types.ObjectId,
-        ref: 'Categories'
-    },
+    category: String,
     img: {
         data: String,
         contentType: String

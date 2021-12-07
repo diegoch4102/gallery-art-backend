@@ -10,7 +10,7 @@ class WorksService {
         return new Promise((resolve, reject) => {
             workSchema.findById(workReturned._id)
                 .populate('maker', 'firstname username')
-                .populate('category', 'name index -_id')
+                // .populate('category', 'name index -_id')
                 .populate({
                     path: 'plrty',
                     populate: [
@@ -31,7 +31,7 @@ class WorksService {
         return new Promise((resolve, reject) => {
             workSchema.find()
                 .populate('maker', 'firstname username')
-                .populate('category', 'name index -_id')
+                // .populate('category', 'name index -_id')
                 .populate({
                     path: 'plrty',
                     populate: [
@@ -70,7 +70,7 @@ class WorksService {
         return new Promise((resolve, reject) => {
             workSchema.findById(id)
                 .populate('maker', 'firstname username')
-                .populate('category', 'name index -_id')
+                // .populate('category', 'name index -_id')
                 .populate({
                     path: 'plrty',
                     populate: [

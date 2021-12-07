@@ -82,12 +82,12 @@ router.post('/',
             });
     });
 
-router.post('/imgPatch/',
+router.post('/imgPatch',
     upload.single('data'),
     async(req, res, next) => {
-        // console.group('[FILE]');
-        // console.log(req.file);
-        // console.groupEnd();
+        console.group('[FILE]');
+        console.log(req.file);
+        console.groupEnd();
         await workCtrl.modifyImg(req.file)
             // SIN ESTE MÉTODO FALLA INTENTAR ENCERRAR img 👇🏻 ETRE PARÉNTESIS
             .then(img => {

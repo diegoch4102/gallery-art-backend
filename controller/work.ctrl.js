@@ -40,17 +40,19 @@ workCtrl.addNew = async(body, file) => {
     if (body.available !== 'true') { avail = !true; }
     let imgData = `http://localhost:1600/public/images/${file.originalname}`;
     // let imgData = await fs.readFile(path.join(`${__dirname}/uploads/${file.filename}`));
-    let cat = categories.get(Number(body.category));
+    
+    // let cat = categories.get(Number(body.category));
 
     let newWork = {
         name: body.name,
         desc: {
             descText: body.descText,
-            creationYear: new Date(body.creationYear),
+            creationYear: body.creationYear,
+            // creationYear: new Date(body.creationYear),
         },
         value: Number(body.value),
         available: avail,
-        category: cat,
+        category: body.category,
         img: {
             data: imgData,
             contentType: file.mimetype
@@ -71,7 +73,12 @@ workCtrl.addNew = async(body, file) => {
 
 workCtrl.modifyImg = async(file) => {
     modImgData = `http://localhost:1600/public/images/${file.originalname}`;
+    // console.group('[new modImgData]');
+    // console.log(modImgData);
     modImgMimeType = file.mimetype;
+    // console.log(modImgMimeType);
+    // console.groupEnd();
+    return({location: modImgData})
 };
 
 workCtrl.updateOne = async(id, body) => {
@@ -81,31 +88,35 @@ workCtrl.updateOne = async(id, body) => {
     // return await service.update(id, work);
     let avail = true;
     if (body.available !== 'true') { avail = !true; }
-    let imgData = '';
-    if (modImgData !== '') {
-        imgData = modImgData;
-    } else {
-        imgData = body.img.data;
-    }
+    // let imgData = '';
+    // if (modImgData !== '') {
+    //     imgData = modImgData;
+    // } else {
+    //     imgData = body.img.data;
+    // }
+    // console.group('[new imgData]');
+    // console.log(imgData);
+    // console.groupEnd();
     let imgMimeType = '';
     if (modImgMimeType !== '') {
-        imgMimeType = modImgData;
+        imgMimeType = modImgMimeType;
     } else {
         imgMimeType = body.img.contentType;
     }
-    let cat = categories.get(Number(body.category));
+    // let cat = categories.get(Number(body.category));
 
     let modWork = {
         name: body.name,
         desc: {
             descText: body.desc.descText,
-            creationYear: new Date(body.desc.creationYear),
+            creationYear: body.desc.creationYear,
+            // creationYear: new Date(body.desc.creationYear),
         },
         value: Number(body.value),
         available: avail,
-        category: cat,
+        category: body.category,
         img: {
-            data: imgData,
+            data: body.img.data,
             contentType: imgMimeType
         },
         maker: body.maker,
