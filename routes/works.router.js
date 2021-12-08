@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
+const validatorHandler = require('./../middlewares/validator.handler');
 const workCtrl = require('./../controller/work.ctrl');
+const { createWork, updateWork, getWork } = require('./../model/work.schema');
 
 const router = express.Router();
 
@@ -35,16 +37,18 @@ router.get('/categories/', async(req, res, next) => {
         });
 });
 
-router.get('/:id', async(req, res, next) => {
-    const { id } = req.params;
-    await workCtrl.getOne(id)
-        .then((user) => {
-            res.json(user);
-        })
-        .catch(error => {
-            next(error);
-        });
-});
+router.get('/:id',
+    validatorHandler(getWork, 'params'),
+    async(req, res, next) => {
+        const { id } = req.params;
+        await workCtrl.getOne(id)
+            .then((user) => {
+                res.json(user);
+            })
+            .catch(error => {
+                next(error);
+            });
+    });
 
 router.get('/category/:idCategory', async(req, res, next) => {
     const { idCategory } = req.params;
@@ -57,12 +61,17 @@ router.get('/category/:idCategory', async(req, res, next) => {
         });
 });
 
+/* Cuando se envía información como formulario no es reconocida hasta
+usar multer 🤷🏻‍♂️, por ende el middleware antes de multer no reconoce la
+información */
 router.post('/',
+    // validatorHandler(createWork, 'body'),
     upload.single('data'),
     async(req, res, next) => {
-        // console.group('[HEADERS]');
+        console.group('[HEADERS]');
         // console.log(req.headers);
-        // console.groupEnd();
+        console.log(req);
+        console.groupEnd();
         console.group('[FILE]');
         console.log(req.file);
         console.groupEnd();
@@ -73,6 +82,7 @@ router.post('/',
         // req.body.image.data = await fs.readFile(path.join(`${__dirname}/uploads/${req.file.filename}`));
         // console.log(`image.data type ${typeof req.body.image.data}`);
         // req.body.image.contentType = "image/png";
+
         workCtrl.addNew(req.body, req.file)
             .then((newWork) => {
                 res.status(201).json(newWork);
@@ -80,7 +90,9 @@ router.post('/',
             .catch(error => {
                 next(error);
             });
-    });
+    },
+    validatorHandler(createWork, 'body'),
+);
 
 router.post('/imgPatch',
     upload.single('data'),
@@ -99,6 +111,8 @@ router.post('/imgPatch',
     });
 
 router.put('/:id',
+    validatorHandler(getWork, 'params'),
+    validatorHandler(createWork, 'body'),
     async(req, res, next) => {
         // console.group('[HEADERS]');
         // console.log(req.headers);
@@ -123,14 +137,16 @@ router.put('/:id',
         }
     });
 
-router.delete('/:id', async(req, res, next) => {
-    try {
-        const { id } = req.params;
-        const respuesta = await workCtrl.delete(id);
-        res.json(respuesta);
-    } catch (error) {
-        next(error);
-    }
-});
+router.delete('/:id',
+    validatorHandler(getWork, 'params'),
+    async(req, res, next) => {
+        try {
+            const { id } = req.params;
+            const respuesta = await workCtrl.delete(id);
+            res.json(respuesta);
+        } catch (error) {
+            next(error);
+        }
+    });
 
 module.exports = router;

@@ -41,6 +41,12 @@ router.get('/:id',
 router.post('/',
     validatorHandler(createUser, 'body'),
     async(req, res, next) => {
+        console.group('[HEADERS]');
+        console.log(req.headers);
+        console.groupEnd();
+        console.group('[BODY]');
+        console.log(req.body);
+        console.groupEnd();
         try {
             const confirmation = await usersCtrl.addNew(req.body);
             console.group('[Response from ctrl]');
@@ -72,17 +78,19 @@ router.put('/:id',
         }
     });
 
-router.delete('/:id', async(req, res, next) => {
-    try {
-        const { id } = req.params;
-        const respuesta = await usersCtrl.delete(id);
-        res.json(respuesta);
-    } catch (error) {
-        /* En lugar de envíar el error al usuario, el error es
-            pasado a los middlewares creados para los errores */
-        // res.send(e);
-        next(error);
-    }
-});
+router.delete('/:id',
+    validatorHandler(getUser, 'params'),
+    async(req, res, next) => {
+        try {
+            const { id } = req.params;
+            const respuesta = await usersCtrl.delete(id);
+            res.json(respuesta);
+        } catch (error) {
+            /* En lugar de envíar el error al usuario, el error es
+                pasado a los middlewares creados para los errores */
+            // res.send(e);
+            next(error);
+        }
+    });
 
 module.exports = router;

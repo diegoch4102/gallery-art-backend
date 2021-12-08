@@ -1,5 +1,5 @@
 const boom = require('@hapi/boom');
-const workSchema = require('./../model/work.schema');
+const { workSchema } = require('./../model/work.schema');
 const categorySchema = require('./../model/category.schema');
 
 class WorksService {
